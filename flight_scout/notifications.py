@@ -25,6 +25,7 @@ from flight_scout.search_engine import Change, ScanStats
 EVENT_NEW_UNDER_CAP = "NUOVA_OFFERTA_SOTTO_SOGLIA"
 EVENT_PRICE_DROP = "CALO_PREZZO"
 EVENT_EXOTIC = "ESOTICA_SCOPERTA"
+EVENT_INTEREST = "DESTINAZIONE_INTERESSANTE"
 EVENT_VERIFIED = "OFFERTA_VERIFICATA"
 EVENT_MONTHLY_LIMIT = "LIMITE_MENSILE_RAGGIUNTO"
 
@@ -65,9 +66,12 @@ def build_notices(
     catalog: DestinationCatalog,
 ) -> list[Notice]:
     notices: list[Notice] = []
-    cap = settings.max_standard_price_eur
+    budget_cap = Decimal(str(criteria.notify_budget_max_eur))
     # Decimal per non mescolare valori monetari e float.
     keep_ratio = (Decimal(100) - Decimal(str(criteria.price_drop_percent))) / Decimal(100)
+    # Per destinazione di interesse si tiene solo l'offerta nuova più economica della scansione,
+    # così una scansione non genera decine di messaggi per la stessa città.
+    interesting_best: dict[str, Change] = {}
     for change in changes:
         offer = change.offer
         key = offer.offer_key()
@@ -76,8 +80,14 @@ def build_notices(
 
         if offer.status == SearchStatus.VERIFIED and change.upsert.superseded_indicative:
             notices.append(_notice(EVENT_VERIFIED, f"{key}|{price}", "Offerta indicativa verificata", offer))
-        elif change.upsert.is_new and price <= cap:
-            notices.append(_notice(EVENT_NEW_UNDER_CAP, f"{key}|{price}", f"Nuova offerta sotto {cap} EUR A/R", offer))
+        elif change.upsert.is_new and price <= budget_cap:
+            notices.append(
+                _notice(EVENT_NEW_UNDER_CAP, f"{key}|{price}", f"Nuova offerta sotto {budget_cap:.0f} EUR A/R", offer)
+            )
+        elif change.upsert.is_new and interest >= criteria.notify_min_interest:
+            current = interesting_best.get(offer.destination_iata)
+            if current is None or price < current.offer.price_eur:
+                interesting_best[offer.destination_iata] = change
 
         previous = change.upsert.previous_price
         if previous is not None and not change.upsert.is_new and price <= previous * keep_ratio:
@@ -89,6 +99,18 @@ def build_notices(
             notices.append(
                 _notice(EVENT_EXOTIC, f"{offer.destination_iata}", "Destinazione interessante scoperta", offer)
             )
+
+    for iata, change in interesting_best.items():
+        offer = change.offer
+        notices.append(
+            _notice(
+                EVENT_INTEREST,
+                f"{iata}|{offer.offer_key()}|{offer.price_eur}",
+                f"Destinazione di interesse (punteggio {catalog.interest(iata, criteria.default_interest_score)}), "
+                f"sopra {budget_cap:.0f} EUR A/R",
+                offer,
+            )
+        )
     return notices
 
 

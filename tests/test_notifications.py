@@ -60,9 +60,37 @@ def test_new_offer_under_cap_triggers_notice(settings, criteria, catalog):
     assert "Prezzo: 88.00 EUR" in notices[0].text
 
 
-def test_new_offer_above_cap_does_not_trigger_budget_notice(settings, criteria, catalog):
-    notices = build_notices([_change(_offer("150"))], settings, criteria, catalog)
+def test_new_offer_above_notify_threshold_does_not_trigger_budget_notice(settings, criteria, catalog):
+    # Soglia notifiche = 150 EUR: un'offerta a 160 non è una notifica "budget"
+    notices = build_notices([_change(_offer("160", dest="FCO"))], settings, criteria, catalog)
     assert all(n.event != EVENT_NEW_UNDER_CAP for n in notices)
+
+
+def test_budget_notice_uses_150_eur_threshold_not_100(settings, criteria, catalog):
+    notices = build_notices([_change(_offer("140"))], settings, criteria, catalog)
+    assert [n.event for n in notices] == [EVENT_NEW_UNDER_CAP]
+    assert "150 EUR" in notices[0].text
+
+
+def test_interesting_destination_above_150_is_notified_once_per_destination(settings, criteria, catalog):
+    # BKK ha interesse 80 (>= 60): due offerte nuove sopra 150 -> una sola notifica, quella più economica
+    changes = [_change(_offer("410", dest="BKK")), _change(_offer("380", dest="BKK"))]
+    notices = build_notices(changes, settings, criteria, catalog)
+    interest = [n for n in notices if n.event == "DESTINAZIONE_INTERESSANTE"]
+    assert len(interest) == 1
+    assert "380.00" in interest[0].text
+
+
+def test_low_interest_destination_above_150_is_not_notified(settings, criteria, catalog):
+    # FCO ha interesse 40 (< 60): nessuna notifica sopra 150
+    notices = build_notices([_change(_offer("300", dest="FCO"))], settings, criteria, catalog)
+    assert all(n.event != "DESTINAZIONE_INTERESSANTE" for n in notices)
+
+
+def test_interest_notice_not_duplicated_when_already_budget_notified(settings, criteria, catalog):
+    # Sotto 150 EUR la regola budget copre già l'offerta: niente messaggio doppio
+    notices = build_notices([_change(_offer("120", dest="BKK"))], settings, criteria, catalog)
+    assert [n.event for n in notices] == [EVENT_NEW_UNDER_CAP]
 
 
 def test_significant_price_drop_triggers_notice(settings, criteria, catalog):

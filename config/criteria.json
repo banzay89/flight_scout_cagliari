@@ -15,6 +15,8 @@
   "duration_penalty_per_hour": 5,
   "default_interest_score": 50,
   "exotic_min_interest": 70,
+  "notify_budget_max_eur": 150,
+  "notify_min_interest": 60,
   "near_budget_max_eur": 130,
   "price_drop_percent": 10,
   "quick_max_api_calls": 10,

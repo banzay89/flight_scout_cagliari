@@ -35,6 +35,9 @@ class Criteria(BaseModel):
     duration_penalty_per_hour: float
     default_interest_score: int = Field(ge=0, le=100)
     exotic_min_interest: int = Field(ge=0, le=100)
+    # Soglie delle notifiche: separate dalla soglia di ricerca (MAX_STANDARD_PRICE_EUR).
+    notify_budget_max_eur: float = Field(gt=0)
+    notify_min_interest: int = Field(ge=0, le=100)
     near_budget_max_eur: float
     price_drop_percent: float = Field(gt=0)
     quick_max_api_calls: int = Field(ge=1)
