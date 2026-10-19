@@ -1,0 +1,27 @@
+{
+  "_nota": "Catalogo aeroporti. 'timezone' serve per controllare gli orari dei voli: senza fuso orario un'offerta resta INDICATIVE. 'interest_score' (0-100) è un valore editoriale iniziale: modificalo liberamente. Non inventare attrazioni: aggiungi solo ciò che conosci.",
+  "airports": [
+    {"iata": "CAG", "name": "Cagliari Elmas", "country": "Italia", "timezone": "Europe/Rome", "interest_score": null},
+    {"iata": "FCO", "name": "Roma Fiumicino", "country": "Italia", "timezone": "Europe/Rome", "interest_score": 40},
+    {"iata": "PMI", "name": "Palma di Maiorca", "country": "Spagna", "timezone": "Europe/Madrid", "interest_score": 40},
+    {"iata": "BCN", "name": "Barcellona", "country": "Spagna", "timezone": "Europe/Madrid", "interest_score": 55},
+    {"iata": "LIS", "name": "Lisbona", "country": "Portogallo", "timezone": "Europe/Lisbon", "interest_score": 55},
+    {"iata": "FNC", "name": "Funchal (Madeira)", "country": "Portogallo", "timezone": "Atlantic/Madeira", "interest_score": 75},
+    {"iata": "KEF", "name": "Reykjavik", "country": "Islanda", "timezone": "Atlantic/Reykjavik", "interest_score": 85},
+    {"iata": "CDG", "name": "Parigi Charles de Gaulle", "country": "Francia", "timezone": "Europe/Paris", "interest_score": 40},
+    {"iata": "ATH", "name": "Atene", "country": "Grecia", "timezone": "Europe/Athens", "interest_score": 45},
+    {"iata": "IST", "name": "Istanbul", "country": "Turchia", "timezone": "Europe/Istanbul", "interest_score": 45},
+    {"iata": "RAK", "name": "Marrakech", "country": "Marocco", "timezone": "Africa/Casablanca", "interest_score": 65},
+    {"iata": "ZNZ", "name": "Zanzibar", "country": "Tanzania", "timezone": "Africa/Dar_es_Salaam", "interest_score": 85},
+    {"iata": "CPT", "name": "Cape Town", "country": "Sudafrica", "timezone": "Africa/Johannesburg", "interest_score": 85},
+    {"iata": "MRU", "name": "Mauritius", "country": "Mauritius", "timezone": "Indian/Mauritius", "interest_score": 88},
+    {"iata": "BKK", "name": "Bangkok", "country": "Thailandia", "timezone": "Asia/Bangkok", "interest_score": 80},
+    {"iata": "SIN", "name": "Singapore", "country": "Singapore", "timezone": "Asia/Singapore", "interest_score": 60},
+    {"iata": "DPS", "name": "Bali (Denpasar)", "country": "Indonesia", "timezone": "Asia/Makassar", "interest_score": 85},
+    {"iata": "NRT", "name": "Tokyo Narita", "country": "Giappone", "timezone": "Asia/Tokyo", "interest_score": 85},
+    {"iata": "JFK", "name": "New York", "country": "Stati Uniti", "timezone": "America/New_York", "interest_score": 60},
+    {"iata": "MEX", "name": "Città del Messico", "country": "Messico", "timezone": "America/Mexico_City", "interest_score": 70},
+    {"iata": "SJD", "name": "Los Cabos", "country": "Messico", "timezone": "America/Mazatlan", "interest_score": 70},
+    {"iata": "PPT", "name": "Papeete (Tahiti)", "country": "Polinesia Francese", "timezone": "Pacific/Tahiti", "interest_score": 90}
+  ]
+}

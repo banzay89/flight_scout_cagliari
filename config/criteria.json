@@ -1,0 +1,23 @@
+{
+  "_nota": "Criteri di classificazione e punteggio. Modifica questi valori per cambiare la classifica; il punteggio è deterministico (stesso input = stesso risultato).",
+  "price_reference_eur": 250,
+  "weights": {
+    "price": 0.35,
+    "duration": 0.2,
+    "stops": 0.2,
+    "status": 0.15,
+    "interest": 0.1
+  },
+  "stops_points": {"0": 100, "1": 80, "2": 55, "3": 30},
+  "stops_points_default": 10,
+  "status_points": {"VERIFIED": 100, "INDICATIVE": 60, "STALE": 40, "ERROR": 0},
+  "duration_comfort_hours": 6,
+  "duration_penalty_per_hour": 5,
+  "default_interest_score": 50,
+  "exotic_min_interest": 70,
+  "near_budget_max_eur": 130,
+  "price_drop_percent": 10,
+  "quick_max_api_calls": 10,
+  "serpapi_hourly_limit": 50,
+  "discovery_patterns": [["GIO", "LUN"], ["VEN", "DOM"], ["SAB", "LUN"]]
+}

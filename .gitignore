@@ -1,0 +1,17 @@
+# Segreti: non committare mai
+.env
+
+# Ambiente e cache Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Dati locali generati dal programma
+data/
+reports/
+logs/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
