@@ -1,0 +1,74 @@
+name: Scansione giornaliera voli
+
+on:
+  schedule:
+    # Ogni giorno alle 07:17 UTC (minuto diverso da :00 per non sovraccaricare i runner)
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Evita due scansioni in parallelo che consumerebbero budget API contemporaneamente
+concurrency:
+  group: flight-scout-daily
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # Segreti del repository: non vengono mai stampati nei log da GitHub
+      SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      PYTHONIOENCODING: utf-8
+
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      - name: Installa Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Installa le dipendenze
+        run: python -m pip install -r requirements.txt
+
+      # Il database contiene cache e contatore mensile delle chiamate API.
+      # Senza questo passaggio ogni esecuzione ripartirebbe da zero e il limite mensile non sarebbe applicato.
+      - name: Ripristina il database
+        uses: actions/cache/restore@v4
+        with:
+          path: data/flights.db
+          key: flight-scout-db-${{ github.run_id }}
+          restore-keys: |
+            flight-scout-db-
+
+      - name: Scansione live (massimo 5 chiamate API)
+        run: python -m flight_scout scan --live --max-api-calls 5
+
+      - name: Genera i report
+        if: always()
+        run: python -m flight_scout report --format all
+
+      - name: Salva il database
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/flights.db
+          key: flight-scout-db-${{ github.run_id }}
+
+      - name: Archivia i report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-scansione-${{ github.run_id }}
+          path: |
+            reports/ultimo_report.html
+            reports/ultimo_report.csv
+            logs/
+          if-no-files-found: warn
+          retention-days: 14
